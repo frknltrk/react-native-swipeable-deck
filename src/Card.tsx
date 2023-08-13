@@ -1,24 +1,18 @@
 import React from 'react';
-import {
-  Text,
-  Animated,
-  PanResponder,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import { Animated, PanResponder, Dimensions, StyleSheet } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
 
 interface CardProps {
-  text: string;
+  children: React.ReactNode;
   onSwipeLeft: () => void;
   onSwipeRight: () => void;
 }
 
-const SwipeableCard: React.FC<CardProps> = ({
-  text,
+const CardView: React.FC<CardProps> = ({
+  children,
   onSwipeLeft,
   onSwipeRight,
 }) => {
@@ -79,7 +73,7 @@ const SwipeableCard: React.FC<CardProps> = ({
       style={[styles.cardStyle, getCardStyle()]}
       {...panResponder.panHandlers}
     >
-      <Text>{text}</Text>
+      {children}
     </Animated.View>
   );
 };
@@ -95,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SwipeableCard;
+export default CardView;

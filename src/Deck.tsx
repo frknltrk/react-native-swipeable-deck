@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Card from './Card';
+import CardView from './Card';
 
 interface DeckProps {
-  data: string[];
+  card_contents: React.ReactNode[]; // Allow any ReactNode as content
 }
 
-const SwipeableDeck: React.FC<DeckProps> = ({ data }) => {
+const SwipeableDeck: React.FC<DeckProps> = ({ card_contents }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const onSwipeLeft = () => {
-    if (currentIndex < data.length - 1) {
+    if (currentIndex < card_contents.length - 1) {
       setCurrentIndex((prevIndex: number) => prevIndex + 1);
       console.log('Deck.onSwipeLeft works');
     } else {
@@ -33,12 +33,13 @@ const SwipeableDeck: React.FC<DeckProps> = ({ data }) => {
   // avoid using Non-null assertion operator (!): line 36. find another way to overcome TS2322
   return (
     <View style={styles.deckContainer}>
-      <Card
+      <CardView
         key={currentIndex}
-        text={data[currentIndex]!}
         onSwipeLeft={onSwipeLeft}
         onSwipeRight={onSwipeRight}
-      />
+      >
+        {card_contents[currentIndex]}
+      </CardView>
     </View>
   );
 };
