@@ -5,6 +5,7 @@ import {
   PanResponder,
   Dimensions,
   StyleSheet,
+  FlatList,
 } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -83,20 +84,42 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
     }
   };
 
+  const renderItem = ({
+    item,
+    index,
+  }: {
+    item: React.ReactNode;
+    index: number;
+  }) => {
+    if (index === currentIndex) {
+      return (
+        <Animated.View key={index} style={[styles.cardStyle, getCardStyle()]}>
+          {item}
+        </Animated.View>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={styles.deckContainer} {...panResponder.panHandlers}>
-      <Animated.View
-        key={currentIndex}
-        style={[styles.cardStyle, getCardStyle()]}
-      >
-        {data[currentIndex]}
-      </Animated.View>
+      <FlatList
+        style={styles.flatListStyle}
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(_, index) => index.toString()}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ alignItems: 'center' }} // Center horizontally
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   deckContainer: {
+    flex: 1,
     width: SCREEN_WIDTH,
     height: '100%',
     justifyContent: 'center',
@@ -104,8 +127,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: 'yellow',
   },
+  flatListStyle: {
+    backgroundColor: 'red',
+    flexGrow: 0, // Don't grow the list
+  },
   cardStyle: {
-    width: 'auto',
+    width: 'auto', // Adjust the card width as needed
     height: 'auto',
     alignItems: 'center',
     justifyContent: 'center',

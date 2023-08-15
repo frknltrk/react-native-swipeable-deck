@@ -16,15 +16,17 @@ const App: React.FC = () => {
     // Add more custom content as needed
   ];
 
-  return <SwipeableDeck data={data} />;
+  return (
+    <View style={styles.container}>
+      <SwipeableDeck data={data} />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
+    width: '50%',
   },
   card: {
     width: 300,
