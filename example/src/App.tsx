@@ -25,8 +25,12 @@ const App: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
-    width: '50%',
+    flex: 1,
+    backgroundColor: 'green',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   card: {
     width: 300,

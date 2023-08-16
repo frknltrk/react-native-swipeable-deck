@@ -111,7 +111,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: 'center' }} // Center horizontally
+        contentContainerStyle={styles.flatListContentContainerStyle} // Center horizontally
       />
     </View>
   );
@@ -120,19 +120,26 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
 const styles = StyleSheet.create({
   deckContainer: {
     flex: 1,
-    width: SCREEN_WIDTH,
-    height: '100%',
+    width: '50%',
+    height: '50%',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
     backgroundColor: 'yellow',
   },
+  flatListContentContainerStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
+  },
   flatListStyle: {
+    width: '50%',
+    height: '50%',
     backgroundColor: 'red',
     flexGrow: 0, // Don't grow the list
   },
   cardStyle: {
-    width: 'auto', // Adjust the card width as needed
+    width: 'auto',
     height: 'auto',
     alignItems: 'center',
     justifyContent: 'center',
