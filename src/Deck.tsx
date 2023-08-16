@@ -27,9 +27,15 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
       position.setValue({ x: gesture.dx, y: gesture.dy });
     },
     onPanResponderRelease: (_, gesture) => {
-      if (gesture.dx > SWIPE_THRESHOLD) {
+      // panResponder should only be responsible for the swipe threshold
+      // move the currentIndex check ahead of the control flow
+      // could be onSwipeLeft/Right
+      if (gesture.dx > SWIPE_THRESHOLD && currentIndex > 0) {
         forceSwipe('right');
-      } else if (gesture.dx < -SWIPE_THRESHOLD) {
+      } else if (
+        gesture.dx < -SWIPE_THRESHOLD &&
+        currentIndex < data.length - 1
+      ) {
         forceSwipe('left');
       } else {
         resetPosition();
@@ -71,17 +77,11 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
   };
 
   const onSwipeLeft = () => {
-    if (currentIndex < data.length - 1) {
-      setCurrentIndex((prevIndex) => prevIndex + 1);
-    } else {
-      setCurrentIndex(0);
-    }
+    setCurrentIndex((prevIndex) => prevIndex + 1);
   };
 
   const onSwipeRight = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prevIndex) => prevIndex - 1);
-    }
+    setCurrentIndex((prevIndex) => prevIndex - 1);
   };
 
   const renderItem = ({
