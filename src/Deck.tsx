@@ -108,8 +108,6 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
         data={data}
         renderItem={renderItem}
         keyExtractor={(_, index) => index.toString()}
-        horizontal
-        pagingEnabled
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.flatListContentContainerStyle} // Center horizontally
       />
