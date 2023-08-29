@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { SwipeableDeck } from '@frknltrk/react-native-swipeable-cards';
+import { SwipeableDeck } from '@frknltrk/react-native-swipeable-deck';
 
 const App: React.FC = () => {
   const data = [

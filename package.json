@@ -1,5 +1,5 @@
 {
-  "name": "@frknltrk/react-native-swipeable-cards",
+  "name": "@frknltrk/react-native-swipeable-deck",
   "version": "0.1.0",
   "description": "swipeable card deck for games",
   "main": "lib/commonjs/index",
