@@ -3,13 +3,10 @@ import {
   View,
   Animated,
   PanResponder,
-  Dimensions,
   StyleSheet,
   FlatList,
 } from 'react-native';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
 
 interface SwipeableDeckProps {
@@ -17,6 +14,12 @@ interface SwipeableDeckProps {
 }
 
 const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  const handleLayout = (event) => {
+    setContainerWidth(event.nativeEvent.layout.width);
+  };
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const position = new Animated.ValueXY();
@@ -30,10 +33,10 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
       // panResponder should only be responsible for the swipe threshold
       // move the currentIndex check ahead of the control flow
       // could be onSwipeLeft/Right
-      if (gesture.dx > SWIPE_THRESHOLD && currentIndex > 0) {
+      if (gesture.dx > containerWidth * 0.25 && currentIndex > 0) {
         forceSwipe('right');
       } else if (
-        gesture.dx < -SWIPE_THRESHOLD &&
+        gesture.dx < -containerWidth * 0.25 &&
         currentIndex < data.length - 1
       ) {
         forceSwipe('left');
@@ -44,7 +47,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
   });
 
   const forceSwipe = (direction: 'right' | 'left') => {
-    const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
+    const x = direction === 'right' ? containerWidth : -containerWidth;
     Animated.timing(position, {
       toValue: { x, y: 0 },
       duration: SWIPE_OUT_DURATION,
@@ -66,7 +69,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
 
   const getCardStyle = () => {
     const rotate = position.x.interpolate({
-      inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+      inputRange: [-containerWidth, 0, containerWidth],
       outputRange: ['-60deg', '0deg', '60deg'],
     });
 
@@ -102,7 +105,11 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
   };
 
   return (
-    <View style={styles.deckContainer} {...panResponder.panHandlers}>
+    <View
+      {...panResponder.panHandlers}
+      style={styles.deckContainer}
+      onLayout={handleLayout}
+    >
       <FlatList
         style={styles.flatListStyle}
         data={data}
