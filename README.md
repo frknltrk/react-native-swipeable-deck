@@ -14,19 +14,21 @@ React Native Swipeable Deck is a customizable swipeable card deck component for 
 - Easily integrate swipeable card decks into your React Native projects.
 - Responsive design for various screen sizes.
 
-## Installation
+## Usage
 
-You can install the React Native Swipeable Deck package using npm or yarn.
+In order to add the package/module to your project:
 
 ```bash
-# Using npm
-npm install @frknltrk/react-native-swipeable-deck
-
 # Using yarn
 yarn add @frknltrk/react-native-swipeable-deck
+
+# Using npm
+npm install @frknltrk/react-native-swipeable-deck
 ```
 
-## Example
+## Contribution
+
+### Example
 
 You can find a usage example in the example folder of this repository. To run the example on the web, follow these steps:
 
@@ -37,4 +39,18 @@ git clone https://github.com/frknltrk/react-native-swipeable-deck.git
 yarn install
 # run
 yarn example run --web
+```
+
+### Upgrade Dependencies
+
+```bash
+$ yarn outdated
+```
+```bash
+$ yarn upgrade xxx@latest # with @latest it checks according to npm repo; otherwise package.json
+# retest the package
+# proceed to the next dep.
+```
+```bash
+$ yarn install # final step
 ```
