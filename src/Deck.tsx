@@ -5,6 +5,7 @@ import {
   PanResponder,
   StyleSheet,
   FlatList,
+  type LayoutChangeEvent,
 } from 'react-native';
 
 const SWIPE_OUT_DURATION = 250;
@@ -16,7 +17,7 @@ interface SwipeableDeckProps {
 const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const handleLayout = (event) => {
+  const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
