@@ -19,6 +19,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
 
   const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
+    console.log(containerWidth);
   };
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -126,11 +127,11 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
 const styles = StyleSheet.create({
   deckContainer: {
     flex: 1,
-    width: '50%',
-    height: '50%',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
+    //backgroundColor: 'yellow',
   },
   flatListContentContainerStyle: {
     alignItems: 'center',
@@ -138,18 +139,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   flatListStyle: {
-    width: '50%',
-    height: '50%',
-    backgroundColor: 'red',
+    width: '100%',
+    height: '100%',
     flexGrow: 0, // Don't grow the list
   },
   cardStyle: {
     width: 'auto',
     height: 'auto',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     userSelect: 'none',
-    backgroundColor: 'black',
+    //backgroundColor: 'black',
   },
 });
 

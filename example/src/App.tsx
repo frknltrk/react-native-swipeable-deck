@@ -26,11 +26,11 @@ const App: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'green',
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    //backgroundColor: 'green',
   },
   card: {
     width: 300,
