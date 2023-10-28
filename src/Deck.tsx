@@ -19,7 +19,6 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
 
   const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
-    console.log(containerWidth);
   };
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,9 +31,6 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
       position.setValue({ x: gesture.dx, y: gesture.dy });
     },
     onPanResponderRelease: (_, gesture) => {
-      // panResponder should only be responsible for the swipe threshold
-      // move the currentIndex check ahead of the control flow
-      // could be onSwipeLeft/Right
       if (gesture.dx > containerWidth * 0.25 && currentIndex > 0) {
         forceSwipe('right');
       } else if (
@@ -118,7 +114,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
         renderItem={renderItem}
         keyExtractor={(_, index) => index.toString()}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContentContainerStyle} // Center horizontally
+        contentContainerStyle={styles.flatListContentContainerStyle}
       />
     </View>
   );
@@ -131,7 +127,6 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    //backgroundColor: 'yellow',
   },
   flatListContentContainerStyle: {
     alignItems: 'center',
@@ -141,7 +136,7 @@ const styles = StyleSheet.create({
   flatListStyle: {
     width: '100%',
     height: '100%',
-    flexGrow: 0, // Don't grow the list
+    flexGrow: 0,
   },
   cardStyle: {
     width: 'auto',
@@ -149,7 +144,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     userSelect: 'none',
-    //backgroundColor: 'black',
   },
 });
 
