@@ -40,7 +40,10 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/frknltrk/react-native-swipeable-cards",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frknltrk/react-native-swipeable-cards.git"
+  },
   "author": "frknltrk <unluturkfurkan@proton.me> (https://github.com/frknltrk)",
   "license": "MIT",
   "bugs": {
