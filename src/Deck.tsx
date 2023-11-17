@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
-  View,
   Animated,
   PanResponder,
   StyleSheet,
   FlatList,
   type LayoutChangeEvent,
+  SafeAreaView,
 } from 'react-native';
 
 const SWIPE_OUT_DURATION = 250;
@@ -107,7 +107,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
   };
 
   return (
-    <View
+    <SafeAreaView
       {...panResponder.panHandlers}
       style={styles.deckContainer}
       onLayout={handleLayout}
@@ -120,7 +120,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.flatListContentContainerStyle} // Center horizontally
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
