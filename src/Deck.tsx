@@ -12,9 +12,10 @@ const SWIPE_OUT_DURATION = 250;
 
 interface SwipeableDeckProps {
   data: React.ReactNode[];
+  renderCard: (item: React.ReactNode) => React.ReactNode;
 }
 
-const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
+const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data, renderCard }) => {
   const [containerWidth, setContainerWidth] = useState(0);
 
   const handleLayout = (event: LayoutChangeEvent) => {
@@ -99,7 +100,7 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data }) => {
     if (index === currentIndex) {
       return (
         <Animated.View key={index} style={[styles.cardStyle, getCardStyle()]}>
-          {item}
+          {renderCard(item)}
         </Animated.View>
       );
     }
