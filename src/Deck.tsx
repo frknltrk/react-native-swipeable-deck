@@ -6,6 +6,7 @@ import {
   FlatList,
   type LayoutChangeEvent,
   SafeAreaView,
+  type PanResponderGestureState,
 } from 'react-native';
 
 const SWIPE_OUT_DURATION = 250;
@@ -29,10 +30,10 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data, renderCard }) => {
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (_, gesture) => {
+    onPanResponderMove: (_, gesture: PanResponderGestureState) => {
       position.setValue({ x: gesture.dx, y: gesture.dy });
     },
-    onPanResponderRelease: (_, gesture) => {
+    onPanResponderRelease: (_, gesture: PanResponderGestureState) => {
       // panResponder should only be responsible for the swipe threshold
       // move the currentIndex check ahead of the control flow
       // could be onSwipeLeft/Right
