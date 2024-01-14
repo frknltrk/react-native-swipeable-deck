@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import {
   Animated,
   PanResponder,
@@ -16,7 +16,10 @@ interface SwipeableDeckProps {
   renderCard: (item: React.ReactNode) => React.ReactNode;
 }
 
-const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data, renderCard }) => {
+const SwipeableDeck: React.ForwardRefRenderFunction<{}, SwipeableDeckProps> = (
+  { data, renderCard },
+  ref
+) => {
   const [containerWidth, setContainerWidth] = useState(0);
 
   const handleLayout = (event: LayoutChangeEvent) => {
@@ -49,6 +52,19 @@ const SwipeableDeck: React.FC<SwipeableDeckProps> = ({ data, renderCard }) => {
       }
     },
   });
+
+  useImperativeHandle(ref, () => ({
+    forceSwipeLeft: () => {
+      if (currentIndex < data.length - 1) {
+        forceSwipe('left');
+      }
+    },
+    forceSwipeRight: () => {
+      if (currentIndex > 0) {
+        forceSwipe('right');
+      }
+    },
+  }));
 
   const forceSwipe = (direction: 'right' | 'left') => {
     const x = direction === 'right' ? containerWidth : -containerWidth;
@@ -155,4 +171,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SwipeableDeck;
+export default forwardRef(SwipeableDeck);

@@ -1,8 +1,21 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
 import { SwipeableDeck } from '@frknltrk/react-native-swipeable-deck';
 
 const App: React.FC = () => {
+  const swipeableDeckRef = useRef<{
+    forceSwipeLeft: () => void;
+    forceSwipeRight: () => void;
+  }>(null);
+
+  const swipeLeft = () => {
+    swipeableDeckRef.current?.forceSwipeLeft();
+  };
+
+  const swipeRight = () => {
+    swipeableDeckRef.current?.forceSwipeRight();
+  };
+
   const data = [
     'text_1',
     'text_2',
@@ -13,6 +26,7 @@ const App: React.FC = () => {
   return (
     <View style={styles.container}>
       <SwipeableDeck
+        ref={swipeableDeckRef}
         data={data}
         renderCard={(item) => (
           <View style={styles.card}>
@@ -20,6 +34,10 @@ const App: React.FC = () => {
           </View>
         )}
       />
+      <View style={{ flexDirection: 'row' }}>
+        <Button title="Swipe Left" onPress={swipeLeft} />
+        <Button title="Swipe Right" onPress={swipeRight} />
+      </View>
     </View>
   );
 };
