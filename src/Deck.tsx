@@ -11,15 +11,15 @@ import {
 
 const SWIPE_OUT_DURATION = 250;
 
-interface SwipeableDeckProps {
-  data: React.ReactNode[];
-  renderCard: (item: React.ReactNode) => React.ReactNode;
+interface SwipeableDeckProps<T> {
+  data: T[];
+  renderCard: (item: T) => React.ReactNode;
 }
 
-const SwipeableDeck: React.ForwardRefRenderFunction<{}, SwipeableDeckProps> = (
-  { data, renderCard },
-  ref
-) => {
+const SwipeableDeck: React.ForwardRefRenderFunction<
+  {},
+  SwipeableDeckProps<React.ReactNode>
+> = ({ data, renderCard }, ref) => {
   const [containerWidth, setContainerWidth] = useState(0);
 
   const handleLayout = (event: LayoutChangeEvent) => {

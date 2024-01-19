@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { SwipeableDeck } from '@frknltrk/react-native-swipeable-deck';
 
-const App: React.FC = () => {
+const App = () => {
   const swipeableDeckRef = useRef<{
     forceSwipeLeft: () => void;
     forceSwipeRight: () => void;
