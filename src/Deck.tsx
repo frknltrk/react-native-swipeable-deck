@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Animated,
   PanResponder,
@@ -12,14 +12,20 @@ import {
 const SWIPE_OUT_DURATION = 250;
 
 interface SwipeableDeckProps<T> {
+  currentIndex: number;
+  onSwipeLeft: () => boolean;
+  onSwipeRight: () => boolean;
   data: T[];
   renderCard: (item: T) => React.ReactNode;
 }
 
-const SwipeableDeck: React.ForwardRefRenderFunction<
-  {},
-  SwipeableDeckProps<React.ReactNode>
-> = ({ data, renderCard }, ref) => {
+const SwipeableDeck = <T,>({
+  currentIndex,
+  onSwipeLeft,
+  onSwipeRight,
+  data,
+  renderCard,
+}: SwipeableDeckProps<T>) => {
   const [containerWidth, setContainerWidth] = useState(0);
 
   const handleLayout = (event: LayoutChangeEvent) => {
@@ -27,9 +33,7 @@ const SwipeableDeck: React.ForwardRefRenderFunction<
     console.log(containerWidth);
   };
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const position = new Animated.ValueXY();
+  const position = useMemo(() => new Animated.ValueXY(), []);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -40,52 +44,51 @@ const SwipeableDeck: React.ForwardRefRenderFunction<
       // panResponder should only be responsible for the swipe threshold
       // move the currentIndex check ahead of the control flow
       // could be onSwipeLeft/Right
-      if (gesture.dx > containerWidth * 0.25 && currentIndex > 0) {
-        forceSwipe('right');
-      } else if (
-        gesture.dx < -containerWidth * 0.25 &&
-        currentIndex < data.length - 1
-      ) {
-        forceSwipe('left');
+      const swipeOutDistance = containerWidth * 0.25;
+      const swipedRight = gesture.dx > swipeOutDistance;
+      const swipedLeft = gesture.dx < -swipeOutDistance;
+
+      if (swipedRight) {
+        const changed = onSwipeRight();
+        if (!changed) {
+          resetPosition();
+        } else {
+          forceSwipe('right');
+        }
+      } else if (swipedLeft) {
+        const changed = onSwipeLeft();
+        if (!changed) {
+          resetPosition();
+        } else {
+          forceSwipe('left');
+        }
       } else {
         resetPosition();
       }
     },
   });
 
-  useImperativeHandle(ref, () => ({
-    forceSwipeLeft: () => {
-      if (currentIndex < data.length - 1) {
-        forceSwipe('left');
-      }
-    },
-    forceSwipeRight: () => {
-      if (currentIndex > 0) {
-        forceSwipe('right');
-      }
-    },
-  }));
-
-  const forceSwipe = (direction: 'right' | 'left') => {
-    const x = direction === 'right' ? containerWidth : -containerWidth;
-    Animated.timing(position, {
-      toValue: { x, y: 0 },
-      duration: SWIPE_OUT_DURATION,
-      useNativeDriver: false,
-    }).start(() => onSwipeComplete(direction));
-  };
-
-  const onSwipeComplete = (direction: 'right' | 'left') => {
-    direction === 'right' ? onSwipeRight() : onSwipeLeft();
-    position.setValue({ x: 0, y: 0 });
-  };
-
-  const resetPosition = () => {
+  const resetPosition = useCallback(() => {
+    console.log(position);
     Animated.spring(position, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: false,
     }).start();
-  };
+  }, [position]);
+
+  const forceSwipe = useCallback(
+    (direction: 'right' | 'left') => {
+      const x = direction === 'right' ? containerWidth : -containerWidth;
+      Animated.timing(position, {
+        toValue: { x, y: 0 },
+        duration: SWIPE_OUT_DURATION,
+        useNativeDriver: false,
+      }).start(() => {
+        position.setValue({ x: 0, y: 0 });
+      });
+    },
+    [containerWidth, position]
+  );
 
   const getCardStyle = () => {
     const rotate = position.x.interpolate({
@@ -99,21 +102,7 @@ const SwipeableDeck: React.ForwardRefRenderFunction<
     };
   };
 
-  const onSwipeLeft = () => {
-    setCurrentIndex((prevIndex) => prevIndex + 1);
-  };
-
-  const onSwipeRight = () => {
-    setCurrentIndex((prevIndex) => prevIndex - 1);
-  };
-
-  const renderItem = ({
-    item,
-    index,
-  }: {
-    item: React.ReactNode;
-    index: number;
-  }) => {
+  const renderItem = ({ item, index }: { item: T; index: number }) => {
     if (index === currentIndex) {
       return (
         <Animated.View key={index} style={[styles.cardStyle, getCardStyle()]}>
@@ -171,4 +160,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default forwardRef(SwipeableDeck);
+export default SwipeableDeck;

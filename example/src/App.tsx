@@ -1,32 +1,35 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { SwipeableDeck } from '@frknltrk/react-native-swipeable-deck';
 
 const App = () => {
-  const swipeableDeckRef = useRef<{
-    forceSwipeLeft: () => void;
-    forceSwipeRight: () => void;
-  }>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const data = ['text_1', 'text_2', 'text_3']; // Example data
 
   const swipeLeft = () => {
-    swipeableDeckRef.current?.forceSwipeLeft();
+    const newIndex = currentIndex + 1;
+    if (newIndex < data.length) {
+      setCurrentIndex(newIndex);
+      return true;
+    }
+    return false;
   };
 
   const swipeRight = () => {
-    swipeableDeckRef.current?.forceSwipeRight();
+    const newIndex = currentIndex - 1;
+    if (newIndex >= 0) {
+      setCurrentIndex(newIndex);
+      return true;
+    }
+    return false;
   };
-
-  const data = [
-    'text_1',
-    'text_2',
-    'text_3',
-    // Add more custom content as needed
-  ];
 
   return (
     <View style={styles.container}>
       <SwipeableDeck
-        ref={swipeableDeckRef}
+        currentIndex={currentIndex}
+        onSwipeLeft={swipeLeft}
+        onSwipeRight={swipeRight}
         data={data}
         renderCard={(item) => (
           <View style={styles.card}>
@@ -34,9 +37,17 @@ const App = () => {
           </View>
         )}
       />
-      <View style={{ flexDirection: 'row' }}>
-        <Button title="Swipe Left" onPress={swipeLeft} />
-        <Button title="Swipe Right" onPress={swipeRight} />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Swipe Left"
+          onPress={swipeLeft}
+          disabled={currentIndex === data.length - 1}
+        />
+        <Button
+          title="Swipe Right"
+          onPress={swipeRight}
+          disabled={currentIndex === 0}
+        />
       </View>
     </View>
   );
@@ -45,11 +56,8 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    //backgroundColor: 'green',
   },
   card: {
     width: 300,
@@ -61,6 +69,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'gray',
     marginVertical: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
   },
 });
 
