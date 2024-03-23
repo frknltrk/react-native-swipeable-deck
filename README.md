@@ -54,3 +54,8 @@ $ yarn upgrade xxx@latest # with @latest it checks according to npm repo; otherw
 ```bash
 $ yarn install # final step
 ```
+
+## TO DO
+- clamp (done)
+- trigger animations through buttons
+- prop: isBackDisabled & isReversed 

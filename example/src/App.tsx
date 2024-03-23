@@ -6,46 +6,31 @@ const App = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const data = ['text_1', 'text_2', 'text_3']; // Example data
 
-  const swipeLeft = () => {
-    const newIndex = currentIndex + 1;
-    if (newIndex < data.length) {
-      setCurrentIndex(newIndex);
-      return true;
-    }
-    return false;
-  };
-
-  const swipeRight = () => {
-    const newIndex = currentIndex - 1;
-    if (newIndex >= 0) {
-      setCurrentIndex(newIndex);
-      return true;
-    }
-    return false;
-  };
-
   return (
     <View style={styles.container}>
       <SwipeableDeck
         currentIndex={currentIndex}
-        onSwipeLeft={swipeLeft}
-        onSwipeRight={swipeRight}
+        setCurrentIndex={setCurrentIndex}
         data={data}
         renderCard={(item) => (
           <View style={styles.card}>
             <Text>{item}</Text>
           </View>
         )}
+        onSwipeLeftGo="next"
+        onSwipeRightGo="previous"
+        isSwipeLeftDisabled={false}
+        isSwipeRightDisabled={false}
       />
       <View style={styles.buttonContainer}>
         <Button
           title="Swipe Left"
-          onPress={swipeLeft}
+          onPress={() => setCurrentIndex(currentIndex + 1)}
           disabled={currentIndex === data.length - 1}
         />
         <Button
           title="Swipe Right"
-          onPress={swipeRight}
+          onPress={() => setCurrentIndex(currentIndex - 1)}
           disabled={currentIndex === 0}
         />
       </View>
