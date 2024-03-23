@@ -38,11 +38,12 @@ git clone https://github.com/frknltrk/react-native-swipeable-deck.git
 # install (set up)
 yarn install
 # run
-yarn example run --web
+yarn example start --web
 ```
 
 ### Upgrade Dependencies
 
+Perform the steps twice: in the root dir (_/_) for the package itself and in the (_/example_) for the example app.
 ```bash
 $ yarn outdated
 ```
@@ -50,6 +51,8 @@ $ yarn outdated
 $ yarn upgrade xxx@latest # with @latest it checks according to npm repo; otherwise package.json
 # retest the package
 # proceed to the next dep.
+# OR just
+# yarn upgrade --latest # to upgrade all packages at once
 ```
 ```bash
 $ yarn install # final step
