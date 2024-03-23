@@ -17,10 +17,10 @@ const App = () => {
             <Text>{item}</Text>
           </View>
         )}
-        onSwipeLeftGo="next"
-        onSwipeRightGo="previous"
         isSwipeLeftDisabled={false}
         isSwipeRightDisabled={false}
+        isBackwardMoveDisabed={false}
+        isReversed={false}
       />
       <View style={styles.buttonContainer}>
         <Button

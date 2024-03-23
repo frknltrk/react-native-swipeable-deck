@@ -11,20 +11,15 @@ import {
 
 const SWIPE_OUT_DURATION = 250;
 
-const CardActions = {
-  NEXT_CARD: 'next',
-  PREVIOUS_CARD: 'previous',
-};
-
 interface SwipeableDeckProps<T> {
   currentIndex: number;
   setCurrentIndex: (currentIndex: number) => void;
   data: T[];
   renderCard: (item: T) => React.ReactNode;
-  onSwipeLeftGo?: string;
-  onSwipeRightGo?: string;
   isSwipeLeftDisabled?: boolean;
   isSwipeRightDisabled?: boolean;
+  isBackwardMoveDisabed?: boolean;
+  isReversed?: boolean;
 }
 
 const SwipeableDeck = <T,>({
@@ -32,10 +27,10 @@ const SwipeableDeck = <T,>({
   setCurrentIndex,
   data,
   renderCard,
-  onSwipeLeftGo = CardActions.NEXT_CARD,
-  onSwipeRightGo = CardActions.PREVIOUS_CARD,
   isSwipeLeftDisabled = false,
   isSwipeRightDisabled = false,
+  isBackwardMoveDisabed = false,
+  isReversed = false,
 }: SwipeableDeckProps<T>) => {
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -77,23 +72,22 @@ const SwipeableDeck = <T,>({
   }, [currentIndex, data.length, setCurrentIndex]);
 
   const moveToPreviousCard = useCallback(() => {
-    if (currentIndex > 0) {
+    if (!isBackwardMoveDisabed && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
       return true;
     }
     return false;
-  }, [currentIndex, setCurrentIndex]);
+  }, [currentIndex, isBackwardMoveDisabed, setCurrentIndex]);
 
   const forceSwipe = useCallback(
     (direction: 'right' | 'left') => {
-      let action = direction === 'right' ? onSwipeRightGo : onSwipeLeftGo;
       let isSwipeCompleted;
-      if (action === CardActions.NEXT_CARD) {
-        isSwipeCompleted = moveToNextCard();
-      } else if (action === CardActions.PREVIOUS_CARD) {
-        isSwipeCompleted = moveToPreviousCard();
+      if (!isReversed) {
+        isSwipeCompleted =
+          direction === 'right' ? moveToPreviousCard() : moveToNextCard();
       } else {
-        isSwipeCompleted = false;
+        isSwipeCompleted =
+          direction === 'right' ? moveToNextCard() : moveToPreviousCard();
       }
 
       if (isSwipeCompleted) {
@@ -110,10 +104,9 @@ const SwipeableDeck = <T,>({
       }
     },
     [
-      onSwipeRightGo,
-      onSwipeLeftGo,
-      moveToNextCard,
+      isReversed,
       moveToPreviousCard,
+      moveToNextCard,
       containerWidth,
       position,
       resetPosition,
