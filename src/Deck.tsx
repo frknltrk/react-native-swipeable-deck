@@ -47,9 +47,9 @@ const SwipeableDeck = <T,>({
     },
     onPanResponderRelease: (_, gesture: PanResponderGestureState) => {
       if (gesture.dx > containerWidth * 0.25 && !isSwipeRightDisabled) {
-        forceSwipe('right');
+        !isReversed ? moveToPreviousCard() : moveToNextCard();
       } else if (gesture.dx < -containerWidth * 0.25 && !isSwipeLeftDisabled) {
-        forceSwipe('left');
+        !isReversed ? moveToNextCard() : moveToPreviousCard();
       } else {
         resetPosition();
       }
@@ -63,55 +63,51 @@ const SwipeableDeck = <T,>({
     }).start();
   }, [position]);
 
+  const forceSwipe = useCallback(
+    (direction: 'right' | 'left') => {
+      const x = direction === 'right' ? containerWidth : -containerWidth;
+      Animated.timing(position, {
+        toValue: { x, y: 0 },
+        duration: SWIPE_OUT_DURATION,
+        useNativeDriver: false,
+      }).start(() => {
+        position.setValue({ x: 0, y: 0 });
+      });
+    },
+    [containerWidth, position]
+  );
+
   const moveToNextCard = useCallback(() => {
     if (currentIndex < data.length - 1) {
+      !isReversed ? forceSwipe('left') : forceSwipe('right');
       setCurrentIndex(currentIndex + 1);
-      return true;
+    } else {
+      resetPosition();
     }
-    return false;
-  }, [currentIndex, data.length, setCurrentIndex]);
+  }, [
+    currentIndex,
+    data.length,
+    forceSwipe,
+    isReversed,
+    resetPosition,
+    setCurrentIndex,
+  ]);
 
   const moveToPreviousCard = useCallback(() => {
     if (!isBackwardMoveDisabed && currentIndex > 0) {
+      !isReversed ? forceSwipe('right') : forceSwipe('left');
       setCurrentIndex(currentIndex - 1);
-      return true;
+    } else {
+      resetPosition();
     }
-    return false;
-  }, [currentIndex, isBackwardMoveDisabed, setCurrentIndex]);
-
-  const forceSwipe = useCallback(
-    (direction: 'right' | 'left') => {
-      let isSwipeCompleted;
-      if (!isReversed) {
-        isSwipeCompleted =
-          direction === 'right' ? moveToPreviousCard() : moveToNextCard();
-      } else {
-        isSwipeCompleted =
-          direction === 'right' ? moveToNextCard() : moveToPreviousCard();
-      }
-
-      if (isSwipeCompleted) {
-        const x = direction === 'right' ? containerWidth : -containerWidth;
-        Animated.timing(position, {
-          toValue: { x, y: 0 },
-          duration: SWIPE_OUT_DURATION,
-          useNativeDriver: false,
-        }).start(() => {
-          position.setValue({ x: 0, y: 0 });
-        });
-      } else {
-        resetPosition();
-      }
-    },
-    [
-      isReversed,
-      moveToPreviousCard,
-      moveToNextCard,
-      containerWidth,
-      position,
-      resetPosition,
-    ]
-  );
+  }, [
+    currentIndex,
+    forceSwipe,
+    isBackwardMoveDisabed,
+    isReversed,
+    resetPosition,
+    setCurrentIndex,
+  ]);
 
   const getCardStyle = () => {
     const rotate = position.x.interpolate({
