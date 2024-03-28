@@ -59,7 +59,7 @@ const SwipeableDeck = <T,>({
   const resetPosition = useCallback(() => {
     Animated.spring(position, {
       toValue: { x: 0, y: 0 },
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   }, [position]);
 
@@ -69,7 +69,7 @@ const SwipeableDeck = <T,>({
       Animated.timing(position, {
         toValue: { x, y: 0 },
         duration: SWIPE_OUT_DURATION,
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start(() => {
         position.setValue({ x: 0, y: 0 });
         func();
