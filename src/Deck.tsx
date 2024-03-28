@@ -64,7 +64,7 @@ const SwipeableDeck = <T,>({
   }, [position]);
 
   const forceSwipe = useCallback(
-    (direction: 'right' | 'left') => {
+    (direction: 'right' | 'left', func: () => void) => {
       const x = direction === 'right' ? containerWidth : -containerWidth;
       Animated.timing(position, {
         toValue: { x, y: 0 },
@@ -72,6 +72,7 @@ const SwipeableDeck = <T,>({
         useNativeDriver: false,
       }).start(() => {
         position.setValue({ x: 0, y: 0 });
+        func();
       });
     },
     [containerWidth, position]
@@ -79,8 +80,9 @@ const SwipeableDeck = <T,>({
 
   const moveToNextCard = useCallback(() => {
     if (currentIndex < data.length - 1) {
-      !isReversed ? forceSwipe('left') : forceSwipe('right');
-      setCurrentIndex(currentIndex + 1);
+      !isReversed
+        ? forceSwipe('left', () => setCurrentIndex(currentIndex + 1))
+        : forceSwipe('right', () => setCurrentIndex(currentIndex - 1));
     } else {
       resetPosition();
     }
@@ -95,8 +97,9 @@ const SwipeableDeck = <T,>({
 
   const moveToPreviousCard = useCallback(() => {
     if (!isBackwardMoveDisabed && currentIndex > 0) {
-      !isReversed ? forceSwipe('right') : forceSwipe('left');
-      setCurrentIndex(currentIndex - 1);
+      !isReversed
+        ? forceSwipe('right', () => setCurrentIndex(currentIndex - 1))
+        : forceSwipe('left', () => setCurrentIndex(currentIndex + 1));
     } else {
       resetPosition();
     }
