@@ -115,7 +115,7 @@ const SwipeableDeck = <T,>({
   const getCardStyle = () => {
     const rotate = position.x.interpolate({
       inputRange: [-containerWidth, 0, containerWidth],
-      outputRange: ['-60deg', '0deg', '60deg'],
+      outputRange: ['-120deg', '0deg', '120deg'],
     });
 
     return {
