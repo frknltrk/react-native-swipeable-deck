@@ -155,6 +155,7 @@ const SwipeableDeck = <T,>({
         keyExtractor={(_, index) => index.toString()}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.flatListContentContainerStyle} // Center horizontally
+        scrollEnabled={false}
       />
     </SafeAreaView>
   );
