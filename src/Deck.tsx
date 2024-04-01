@@ -18,7 +18,7 @@ interface SwipeableDeckProps<T> {
   renderCard: (item: T) => React.ReactNode;
   isSwipeLeftDisabled?: boolean;
   isSwipeRightDisabled?: boolean;
-  isBackwardMoveDisabed?: boolean;
+  isBackwardMoveDisabled?: boolean;
   isReversed?: boolean;
 }
 
@@ -29,7 +29,7 @@ const SwipeableDeck = <T,>({
   renderCard,
   isSwipeLeftDisabled = false,
   isSwipeRightDisabled = false,
-  isBackwardMoveDisabed = false,
+  isBackwardMoveDisabled = false,
   isReversed = false,
 }: SwipeableDeckProps<T>) => {
   const [containerWidth, setContainerWidth] = useState(0);
@@ -96,7 +96,7 @@ const SwipeableDeck = <T,>({
   ]);
 
   const moveToPreviousCard = useCallback(() => {
-    if (!isBackwardMoveDisabed && currentIndex > 0) {
+    if (!isBackwardMoveDisabled && currentIndex > 0) {
       !isReversed
         ? forceSwipe('right', () => setCurrentIndex(currentIndex - 1))
         : forceSwipe('left', () => setCurrentIndex(currentIndex + 1));
@@ -106,7 +106,7 @@ const SwipeableDeck = <T,>({
   }, [
     currentIndex,
     forceSwipe,
-    isBackwardMoveDisabed,
+    isBackwardMoveDisabled,
     isReversed,
     resetPosition,
     setCurrentIndex,

@@ -19,7 +19,7 @@ const App = () => {
         )}
         isSwipeLeftDisabled={false}
         isSwipeRightDisabled={false}
-        isBackwardMoveDisabed={false}
+        isBackwardMoveDisabled={false}
         isReversed={false}
       />
       <View style={styles.buttonContainer}>
