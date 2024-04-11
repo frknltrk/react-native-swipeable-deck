@@ -17,21 +17,21 @@ const App = () => {
             <Text>{item}</Text>
           </View>
         )}
-        isSwipeLeftDisabled={false}
-        isSwipeRightDisabled={false}
-        isBackwardMoveDisabled={false}
-        isReversed={false}
+        swipeLeftDisabled={false}
+        swipeRightDisabled={false}
+        backwardMoveDisabled={false}
+        actionsReversed={false}
       />
       <View style={styles.buttonContainer}>
         <Button
-          title="Swipe Left"
-          onPress={() => setCurrentIndex(currentIndex + 1)}
-          disabled={currentIndex === data.length - 1}
-        />
-        <Button
-          title="Swipe Right"
+          title="Previous"
           onPress={() => setCurrentIndex(currentIndex - 1)}
           disabled={currentIndex === 0}
+        />
+        <Button
+          title="Next"
+          onPress={() => setCurrentIndex(currentIndex + 1)}
+          disabled={currentIndex === data.length - 1}
         />
       </View>
     </View>

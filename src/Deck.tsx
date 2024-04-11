@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Animated,
   PanResponder,
@@ -16,10 +22,10 @@ interface SwipeableDeckProps<T> {
   setCurrentIndex: (currentIndex: number) => void;
   data: T[];
   renderCard: (item: T) => React.ReactNode;
-  isSwipeLeftDisabled?: boolean;
-  isSwipeRightDisabled?: boolean;
-  isBackwardMoveDisabled?: boolean;
-  isReversed?: boolean;
+  swipeLeftDisabled?: boolean;
+  swipeRightDisabled?: boolean;
+  backwardMoveDisabled?: boolean;
+  actionsReversed?: boolean;
 }
 
 const SwipeableDeck = <T,>({
@@ -27,29 +33,39 @@ const SwipeableDeck = <T,>({
   setCurrentIndex,
   data,
   renderCard,
-  isSwipeLeftDisabled = false,
-  isSwipeRightDisabled = false,
-  isBackwardMoveDisabled = false,
-  isReversed = false,
+  swipeLeftDisabled = false,
+  swipeRightDisabled = false,
+  backwardMoveDisabled = false,
+  actionsReversed = false,
 }: SwipeableDeckProps<T>) => {
-  const [containerWidth, setContainerWidth] = useState(0);
+  const scaleValue = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    // Reset scaleValue to 0 for the new card
+    scaleValue.setValue(0);
+    // Start the scale animation
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
+  }, [currentIndex, scaleValue]);
 
+  const [containerWidth, setContainerWidth] = useState(0);
   const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
   const position = useMemo(() => new Animated.ValueXY(), []);
-
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (_, gesture: PanResponderGestureState) => {
       position.setValue({ x: gesture.dx, y: gesture.dy });
     },
     onPanResponderRelease: (_, gesture: PanResponderGestureState) => {
-      if (gesture.dx > containerWidth * 0.25 && !isSwipeRightDisabled) {
-        !isReversed ? moveToPreviousCard() : moveToNextCard();
-      } else if (gesture.dx < -containerWidth * 0.25 && !isSwipeLeftDisabled) {
-        !isReversed ? moveToNextCard() : moveToPreviousCard();
+      if (gesture.dx > containerWidth * 0.25 && !swipeRightDisabled) {
+        !actionsReversed ? moveToPreviousCard() : moveToNextCard();
+      } else if (gesture.dx < -containerWidth * 0.25 && !swipeLeftDisabled) {
+        !actionsReversed ? moveToNextCard() : moveToPreviousCard();
       } else {
         resetPosition();
       }
@@ -80,9 +96,9 @@ const SwipeableDeck = <T,>({
 
   const moveToNextCard = useCallback(() => {
     if (currentIndex < data.length - 1) {
-      !isReversed
+      !actionsReversed
         ? forceSwipe('left', () => setCurrentIndex(currentIndex + 1))
-        : forceSwipe('right', () => setCurrentIndex(currentIndex - 1));
+        : forceSwipe('right', () => setCurrentIndex(currentIndex + 1));
     } else {
       resetPosition();
     }
@@ -90,24 +106,24 @@ const SwipeableDeck = <T,>({
     currentIndex,
     data.length,
     forceSwipe,
-    isReversed,
+    actionsReversed,
     resetPosition,
     setCurrentIndex,
   ]);
 
   const moveToPreviousCard = useCallback(() => {
-    if (!isBackwardMoveDisabled && currentIndex > 0) {
-      !isReversed
+    if (!backwardMoveDisabled && currentIndex > 0) {
+      !actionsReversed
         ? forceSwipe('right', () => setCurrentIndex(currentIndex - 1))
-        : forceSwipe('left', () => setCurrentIndex(currentIndex + 1));
+        : forceSwipe('left', () => setCurrentIndex(currentIndex - 1));
     } else {
       resetPosition();
     }
   }, [
     currentIndex,
     forceSwipe,
-    isBackwardMoveDisabled,
-    isReversed,
+    backwardMoveDisabled,
+    actionsReversed,
     resetPosition,
     setCurrentIndex,
   ]);
@@ -118,9 +134,14 @@ const SwipeableDeck = <T,>({
       outputRange: ['-120deg', '0deg', '120deg'],
     });
 
+    const scale = scaleValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    });
+
     return {
       ...position.getLayout(),
-      transform: [{ rotate }],
+      transform: [{ rotate }, { scale }], // include the scale transform here
     };
   };
 
