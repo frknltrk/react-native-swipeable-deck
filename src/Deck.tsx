@@ -35,23 +35,16 @@ const SwipeableDeck = <T,>({
   const scaleValue = useRef(new Animated.Value(0)).current;
   const position = useRef(new Animated.ValueXY()).current;
   useEffect(() => {
-    // Reset scaleValue and position for the new card
-    scaleValue.setValue(0);
+    // Reset both position and scale values before rendering the new card
     position.setValue({ x: 0, y: 0 });
-    // Start the scale animation after resetting position
-    Animated.sequence([
-      Animated.spring(position, {
-        toValue: { x: 0, y: 0 },
-        friction: 5,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleValue, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [currentIndex, scaleValue, position]);
+    scaleValue.setValue(0);
+    // Start the scale animation only after position reset
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
+  }, [currentIndex, position, scaleValue]);
 
   const [containerWidth, setContainerWidth] = useState(0);
   const handleLayout = (event: LayoutChangeEvent) => {
