@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   PanResponder,
@@ -39,23 +33,31 @@ const SwipeableDeck = <T,>({
   actionsReversed = false,
 }: SwipeableDeckProps<T>) => {
   const scaleValue = useRef(new Animated.Value(0)).current;
+  const position = useRef(new Animated.ValueXY()).current;
   useEffect(() => {
-    // Reset scaleValue to 0 for the new card
+    // Reset scaleValue and position for the new card
     scaleValue.setValue(0);
-    // Start the scale animation
-    Animated.spring(scaleValue, {
-      toValue: 1,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  }, [currentIndex, scaleValue]);
+    position.setValue({ x: 0, y: 0 });
+    // Start the scale animation after resetting position
+    Animated.sequence([
+      Animated.spring(position, {
+        toValue: { x: 0, y: 0 },
+        friction: 5,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleValue, {
+        toValue: 1,
+        friction: 5,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [currentIndex, scaleValue, position]);
 
   const [containerWidth, setContainerWidth] = useState(0);
   const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
-  const position = useMemo(() => new Animated.ValueXY(), []);
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (_, gesture: PanResponderGestureState) => {
@@ -79,8 +81,12 @@ const SwipeableDeck = <T,>({
     }).start();
   }, [position]);
 
+  const [swipeInProgress, setSwipeInProgress] = useState(false);
+
   const forceSwipe = useCallback(
     (direction: 'right' | 'left', func: () => void) => {
+      if (swipeInProgress) return;
+      setSwipeInProgress(true);
       const x = direction === 'right' ? containerWidth : -containerWidth;
       Animated.timing(position, {
         toValue: { x, y: 0 },
@@ -89,16 +95,25 @@ const SwipeableDeck = <T,>({
       }).start(() => {
         position.setValue({ x: 0, y: 0 });
         func();
+        setSwipeInProgress(false);
       });
     },
-    [containerWidth, position]
+    [containerWidth, position, swipeInProgress]
+  );
+
+  const setClampedIndex = useCallback(
+    (index: number) => {
+      const clampedIndex = Math.min(Math.max(index, 0), data.length - 1);
+      setCurrentIndex(clampedIndex);
+    },
+    [data.length, setCurrentIndex]
   );
 
   const moveToNextCard = useCallback(() => {
     if (currentIndex < data.length - 1) {
       !actionsReversed
-        ? forceSwipe('left', () => setCurrentIndex(currentIndex + 1))
-        : forceSwipe('right', () => setCurrentIndex(currentIndex + 1));
+        ? forceSwipe('left', () => setClampedIndex(currentIndex + 1)) // Step 2: Use setClampedIndex here
+        : forceSwipe('right', () => setClampedIndex(currentIndex + 1));
     } else {
       resetPosition();
     }
@@ -108,14 +123,14 @@ const SwipeableDeck = <T,>({
     forceSwipe,
     actionsReversed,
     resetPosition,
-    setCurrentIndex,
+    setClampedIndex, // Add setClampedIndex to dependencies
   ]);
 
   const moveToPreviousCard = useCallback(() => {
     if (!backwardMoveDisabled && currentIndex > 0) {
       !actionsReversed
-        ? forceSwipe('right', () => setCurrentIndex(currentIndex - 1))
-        : forceSwipe('left', () => setCurrentIndex(currentIndex - 1));
+        ? forceSwipe('right', () => setClampedIndex(currentIndex - 1)) // Step 2: Use setClampedIndex here
+        : forceSwipe('left', () => setClampedIndex(currentIndex - 1));
     } else {
       resetPosition();
     }
@@ -125,7 +140,7 @@ const SwipeableDeck = <T,>({
     backwardMoveDisabled,
     actionsReversed,
     resetPosition,
-    setCurrentIndex,
+    setClampedIndex, // Add setClampedIndex to dependencies
   ]);
 
   const getCardStyle = () => {
@@ -146,13 +161,6 @@ const SwipeableDeck = <T,>({
   };
 
   const renderItem = ({ item, index }: { item: T; index: number }) => {
-    if (currentIndex < 0 || currentIndex > data.length - 1) {
-      const clampedCurrentIndex = Math.min(
-        Math.max(currentIndex, 0),
-        data.length - 1
-      );
-      setCurrentIndex(clampedCurrentIndex);
-    }
     if (index === currentIndex) {
       return (
         <Animated.View key={index} style={[styles.cardStyle, getCardStyle()]}>
@@ -177,6 +185,8 @@ const SwipeableDeck = <T,>({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.flatListContentContainerStyle} // Center horizontally
         scrollEnabled={false}
+        initialNumToRender={3}
+        maxToRenderPerBatch={5}
       />
     </SafeAreaView>
   );
