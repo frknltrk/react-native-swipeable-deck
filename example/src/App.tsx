@@ -4,7 +4,17 @@ import { SwipeableDeck } from '@frknltrk/react-native-swipeable-deck';
 
 const App = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const data = ['text_1', 'text_2', 'text_3']; // Example data
+  const data = [
+    'text_1',
+    'text_2',
+    'text_3',
+    'text_4',
+    'text_5',
+    'text_6',
+    'text_7',
+    'text_8',
+    'text_9',
+  ]; // Example data
 
   return (
     <View style={styles.container}>
