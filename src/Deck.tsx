@@ -196,6 +196,9 @@ const SwipeableDeck = <T,>({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.flatListContentContainerStyle}
           scrollEnabled={false}
+          initialNumToRender={1}
+          maxToRenderPerBatch={1}
+          windowSize={2}
         />
       </PanGestureHandler>
     </SafeAreaView>
