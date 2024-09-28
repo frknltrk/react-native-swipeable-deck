@@ -1,6 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, FlatList, SafeAreaView, Animated } from 'react-native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import {
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  Animated,
+  type LayoutChangeEvent,
+} from 'react-native';
+import {
+  PanGestureHandler,
+  State,
+  type PanGestureHandlerGestureEvent,
+} from 'react-native-gesture-handler';
 
 const SWIPE_OUT_DURATION = 250;
 
@@ -43,11 +53,11 @@ const SwipeableDeck = <T,>({
   const [containerWidth, setContainerWidth] = useState(0);
 
   // Handle layout changes to get container width
-  const handleLayout = (event: any) => {
+  const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
-  const onGestureEvent = Animated.event(
+  const onGestureEvent = Animated.event<PanGestureHandlerGestureEvent>(
     [
       {
         nativeEvent: {
