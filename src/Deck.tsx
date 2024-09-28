@@ -31,13 +31,14 @@ const SwipeableDeck = <T,>({
 
   // Effect to scale the card when currentIndex changes
   useEffect(() => {
+    position.setValue({ x: 0, y: 0 });
     scaleValue.setValue(0);
     Animated.spring(scaleValue, {
       toValue: 1,
       friction: 5,
       useNativeDriver: true,
     }).start();
-  }, [currentIndex, scaleValue]);
+  }, [currentIndex, position, scaleValue]);
 
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -88,7 +89,6 @@ const SwipeableDeck = <T,>({
         duration: SWIPE_OUT_DURATION,
         useNativeDriver: true,
       }).start(() => {
-        position.setValue({ x: 0, y: 0 });
         func();
       });
     },
