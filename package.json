@@ -1,6 +1,6 @@
 {
   "name": "@frknltrk/react-native-swipeable-deck",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "swipeable card deck for games",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -42,14 +42,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/frknltrk/react-native-swipeable-cards.git"
+    "url": "git+https://github.com/frknltrk/react-native-swipeable-deck.git"
   },
   "author": "frknltrk <unluturkfurkan@proton.me> (https://github.com/frknltrk)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/frknltrk/react-native-swipeable-cards/issues"
+    "url": "https://github.com/frknltrk/react-native-swipeable-deck/issues"
   },
-  "homepage": "https://github.com/frknltrk/react-native-swipeable-cards#readme",
+  "homepage": "https://github.com/frknltrk/react-native-swipeable-deck#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
