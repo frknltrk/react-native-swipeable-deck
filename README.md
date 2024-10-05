@@ -2,7 +2,7 @@
 
 ![npm](https://img.shields.io/npm/v/@frknltrk/react-native-swipeable-deck) ![License](https://img.shields.io/npm/l/@frknltrk/react-native-swipeable-deck)
 
-A swipeable card deck component for React Native, perfect for creating game-like experiences with swipe gestures.
+A swipeable card deck component for React Native, perfect for creating game-like experiences with swipe gestures. Inspired by [PartyQs](https://play.google.com/store/apps/details?id=com.partyqs), [react-native-swipe-cards-deck](https://github.com/swaplet/react-native-swipe-cards-deck) and [swipeable_card](https://github.com/ninest/swipeable_card).
 
 <img src="doc/demo_2.gif" width="300" height="533"/>
 
