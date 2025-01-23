@@ -4,6 +4,8 @@
 
 A swipeable card deck component for React Native, perfect for creating game-like experiences with swipe gestures. Inspired by [PartyQs](https://play.google.com/store/apps/details?id=com.partyqs), [react-native-swipe-cards-deck](https://github.com/swaplet/react-native-swipe-cards-deck) and [swipeable_card](https://github.com/ninest/swipeable_card).
 
+Check out the live demo [here](https://sorsana-c18f9.web.app/).
+
 <img src="doc/demo_2.gif" width="300" height="533"/>
 
 ## Features
