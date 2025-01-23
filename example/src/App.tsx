@@ -1,6 +1,31 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { SwipeableDeck } from '@frknltrk/react-native-swipeable-deck';
+
+interface CustomButtonProps {
+  title: string;
+  onPress: () => void;
+  disabled: boolean;
+}
+
+const CustomButton: React.FC<CustomButtonProps> = ({
+  title,
+  onPress,
+  disabled,
+}) => (
+  <Pressable
+    style={({ pressed }) => [
+      styles.button,
+      {
+        opacity: pressed || disabled ? 0.5 : 1,
+      },
+    ]}
+    onPress={onPress}
+    disabled={disabled}
+  >
+    <Text style={styles.buttonText}>{title}</Text>
+  </Pressable>
+);
 
 const App = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,7 +39,7 @@ const App = () => {
     'text_7',
     'text_8',
     'text_9',
-  ]; // Example data
+  ];
 
   return (
     <View style={styles.container}>
@@ -33,12 +58,12 @@ const App = () => {
         actionsReversed={false}
       />
       <View style={styles.buttonContainer}>
-        <Button
+        <CustomButton
           title="Previous"
           onPress={() => setCurrentIndex(currentIndex - 1)}
           disabled={currentIndex === 0}
         />
-        <Button
+        <CustomButton
           title="Next"
           onPress={() => setCurrentIndex(currentIndex + 1)}
           disabled={currentIndex === data.length - 1}
@@ -68,6 +93,18 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     marginTop: 20,
+  },
+  button: {
+    marginHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#007bff',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
