@@ -73,16 +73,16 @@ export default App;
 
 ### Props
 
-| Prop                  | Type                | Description                                                      | Default |
-|-----------------------|---------------------|------------------------------------------------------------------|---------|
-| `currentIndex`         | `number`            | Index of the current card to be displayed.                       | `0`     |
-| `setCurrentIndex`      | `(index: number) => void` | Callback to update the current card index.                        |         |
-| `data`                | `T[]`               | Array of data items for the deck.                                | `[]`    |
-| `renderCard`           | `(item: T) => React.ReactNode` | Function to render each card.                                      |         |
-| `swipeLeftDisabled`    | `boolean`           | Disables left swipe when set to true.                            | `false` |
-| `swipeRightDisabled`   | `boolean`           | Disables right swipe when set to true.                           | `false` |
-| `backwardMoveDisabled` | `boolean`           | Disables backward movement (going to the previous card).          | `false` |
-| `actionsReversed`      | `boolean`           | Reverses the swipe actions (left for next, right for previous).   | `false` |
+| Prop                   | Type                           | Description                                                     | Default |
+| ---------------------- | ------------------------------ | --------------------------------------------------------------- | ------- |
+| `currentIndex`         | `number`                       | Index of the current card to be displayed.                      | `0`     |
+| `setCurrentIndex`      | `(index: number) => void`      | Callback to update the current card index.                      |         |
+| `data`                 | `T[]`                          | Array of data items for the deck.                               | `[]`    |
+| `renderCard`           | `(item: T) => React.ReactNode` | Function to render each card.                                   |         |
+| `swipeLeftDisabled`    | `boolean`                      | Disables left swipe when set to true.                           | `false` |
+| `swipeRightDisabled`   | `boolean`                      | Disables right swipe when set to true.                          | `false` |
+| `backwardMoveDisabled` | `boolean`                      | Disables backward movement (going to the previous card).        | `false` |
+| `actionsReversed`      | `boolean`                      | Reverses the swipe actions (left for next, right for previous). | `false` |
 
 ### Example with Swipe Restrictions
 
@@ -92,7 +92,7 @@ export default App;
   setCurrentIndex={setCurrentIndex}
   data={data}
   renderCard={renderCard}
-  swipeLeftDisabled={true}  // Disable left swipe
+  swipeLeftDisabled={true} // Disable left swipe
   swipeRightDisabled={false} // Allow right swipe
 />
 ```
@@ -112,13 +112,14 @@ $ npm run example
 - [ ] trigger swipe animations through buttons
 - [x] add props: swipeLeftDisabled, swipeRightDisabled
 - [x] add props: backwardMoveDisabled, actionsReversed
+
 ### Scripts
 
-| Command        | Description                                              |
-|----------------|----------------------------------------------------------|
-| `npm run test` | Run tests using Jest                                      |
-| `npm run lint` | Lint your code using ESLint                               |
-| `npm run release` | Create a new release using `release-it`                |
+| Command           | Description                             |
+| ----------------- | --------------------------------------- |
+| `npm run test`    | Run tests using Jest                    |
+| `npm run lint`    | Lint your code using ESLint             |
+| `npm run release` | Create a new release using `release-it` |
 
 ## License
 
@@ -130,7 +131,7 @@ Feel free to submit issues and pull requests! Contributions are welcome.
 
 ## Bugs & Feedback
 
-If you encounter any issues or have suggestions for improvements, please open an issue on the [GitHub Issues page](https://github.com/frknltrk/react-native-swipeable-cards/issues).
+If you encounter any issues or have suggestions for improvements, please open an issue on the [GitHub Issues page](https://github.com/frknltrk/react-native-swipeable-deck/issues).
 
 ## Author
 
