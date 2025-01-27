@@ -1575,7 +1575,7 @@
     js-yaml "^4.1.0"
 
 "@frknltrk/react-native-swipeable-deck@file:..":
-  version "3.3.3"
+  version "3.4.0"
   resolved "file:.."
   dependencies:
     "@types/react-dom" "^18.2.22"
