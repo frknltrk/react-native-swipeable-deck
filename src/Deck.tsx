@@ -1,23 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
-  FlatList,
   SafeAreaView,
   Animated,
+  FlatList,
   type LayoutChangeEvent,
 } from 'react-native';
-import {
-  PanGestureHandler,
-  State,
-  type PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const SWIPE_OUT_DURATION = 250;
 
-// Define Props Interface
 interface SwipeableDeckProps<T> {
   currentIndex: number;
-  setCurrentIndex: (currentIndex: number) => void;
+  setCurrentIndex: (index: number) => void;
   data: T[];
   renderCard: (item: T) => React.ReactNode;
   swipeLeftDisabled?: boolean;
@@ -36,10 +31,10 @@ const SwipeableDeck = <T,>({
   backwardMoveDisabled = false,
   actionsReversed = false,
 }: SwipeableDeckProps<T>) => {
-  const scaleValue = useRef(new Animated.Value(0)).current;
   const position = useRef(new Animated.ValueXY()).current;
+  const scaleValue = useRef(new Animated.Value(0)).current;
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  // Effect to scale the card when currentIndex changes
   useEffect(() => {
     position.setValue({ x: 0, y: 0 });
     scaleValue.setValue(0);
@@ -50,107 +45,81 @@ const SwipeableDeck = <T,>({
     }).start();
   }, [currentIndex, position, scaleValue]);
 
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  // Handle layout changes to get container width
   const handleLayout = (event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
-  const onGestureEvent = Animated.event<PanGestureHandlerGestureEvent>(
-    [
-      {
-        nativeEvent: {
-          translationX: position.x,
-          translationY: position.y,
-        },
-      },
-    ],
-    { useNativeDriver: true }
-  );
-
-  const onHandlerStateChange = (event: any) => {
-    if (event.nativeEvent.state === State.END) {
-      const { translationX } = event.nativeEvent;
-      if (translationX > containerWidth * 0.25 && !swipeRightDisabled) {
-        !actionsReversed ? moveToPreviousCard() : moveToNextCard();
-      } else if (translationX < -containerWidth * 0.25 && !swipeLeftDisabled) {
-        !actionsReversed ? moveToNextCard() : moveToPreviousCard();
-      } else {
-        resetPosition(); // Call resetPosition when releasing without swiping enough
-      }
-    }
-  };
-
-  // Function to reset card position with animation
-  const resetPosition = useCallback(() => {
+  const resetPosition = () => {
     Animated.spring(position, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: true,
     }).start();
-  }, [position]);
+  };
 
-  // Function to force card swipe and move to next or previous card
-  const forceSwipe = useCallback(
-    (direction: 'right' | 'left', func: () => void) => {
-      const x = direction === 'right' ? containerWidth : -containerWidth;
-      Animated.timing(position, {
-        toValue: { x, y: 0 },
-        duration: SWIPE_OUT_DURATION,
-        useNativeDriver: true,
-      }).start(() => {
-        func();
-      });
-    },
-    [containerWidth, position]
-  );
+  const forceSwipe = (direction: 'left' | 'right', onComplete: () => void) => {
+    const x = direction === 'right' ? containerWidth : -containerWidth;
+    Animated.timing(position, {
+      toValue: { x, y: 0 },
+      duration: SWIPE_OUT_DURATION,
+      useNativeDriver: true,
+    }).start(onComplete);
+  };
 
-  // Function to set clamped index
-  const setClampedIndex = useCallback(
-    (index: number) => {
-      const clampedIndex = Math.min(Math.max(index, 0), data.length - 1);
-      setCurrentIndex(clampedIndex);
-    },
-    [data.length, setCurrentIndex]
-  );
+  const updateIndex = (newIndex: number) => {
+    const clampedIndex = Math.max(0, Math.min(newIndex, data.length - 1));
+    setCurrentIndex(clampedIndex);
+  };
 
-  // Move to next card logic
-  const moveToNextCard = useCallback(() => {
+  const handleSwipe = (direction: 'left' | 'right') => {
+    if (direction === 'left') {
+      if (!swipeLeftDisabled) {
+        actionsReversed ? moveBackward() : moveForward();
+      } else {
+        resetPosition();
+      }
+    } else if (direction === 'right') {
+      if (!swipeRightDisabled) {
+        actionsReversed ? moveForward() : moveBackward();
+      } else {
+        resetPosition();
+      }
+    }
+  };
+
+  const moveForward = () => {
     if (currentIndex < data.length - 1) {
-      !actionsReversed
-        ? forceSwipe('left', () => setClampedIndex(currentIndex + 1))
-        : forceSwipe('right', () => setClampedIndex(currentIndex + 1));
+      forceSwipe(actionsReversed ? 'right' : 'left', () =>
+        updateIndex(currentIndex + 1)
+      );
     } else {
       resetPosition();
     }
-  }, [
-    currentIndex,
-    data.length,
-    forceSwipe,
-    actionsReversed,
-    resetPosition,
-    setClampedIndex,
-  ]);
+  };
 
-  // Move to previous card logic
-  const moveToPreviousCard = useCallback(() => {
+  const moveBackward = () => {
     if (!backwardMoveDisabled && currentIndex > 0) {
-      !actionsReversed
-        ? forceSwipe('right', () => setClampedIndex(currentIndex - 1))
-        : forceSwipe('left', () => setClampedIndex(currentIndex - 1));
+      forceSwipe(actionsReversed ? 'left' : 'right', () =>
+        updateIndex(currentIndex - 1)
+      );
     } else {
       resetPosition();
     }
-  }, [
-    currentIndex,
-    forceSwipe,
-    backwardMoveDisabled,
-    actionsReversed,
-    resetPosition,
-    setClampedIndex,
-  ]);
+  };
 
-  // Get styles for the current card
+  const gesture = Gesture.Pan()
+    .onUpdate(({ translationX, translationY }) => {
+      position.setValue({ x: translationX, y: translationY });
+    })
+    .onEnd(({ translationX }) => {
+      if (translationX > containerWidth * 0.25) {
+        handleSwipe('right');
+      } else if (translationX < -containerWidth * 0.25) {
+        handleSwipe('left');
+      } else {
+        resetPosition();
+      }
+    });
+
   const getCardStyle = () => {
     const rotate = position.x.interpolate({
       inputRange: [-containerWidth, 0, containerWidth],
@@ -162,18 +131,15 @@ const SwipeableDeck = <T,>({
       outputRange: [0, 1],
     });
 
-    return {
-      transform: [{ rotate }, { scale }],
-    };
+    return { transform: [{ rotate }, { scale }] };
   };
 
-  // Renderer for individual cards
   const renderItem = ({ item, index }: { item: T; index: number }) => {
     if (index === currentIndex) {
       return (
         <Animated.View
           key={index}
-          style={[styles.cardStyle, getCardStyle(), position.getLayout()]}
+          style={[styles.card, getCardStyle(), position.getLayout()]}
         >
           {renderCard(item)}
         </Animated.View>
@@ -183,53 +149,41 @@ const SwipeableDeck = <T,>({
   };
 
   return (
-    <SafeAreaView style={styles.deckContainer} onLayout={handleLayout}>
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
+    <SafeAreaView style={styles.container} onLayout={handleLayout}>
+      <GestureDetector gesture={gesture}>
         <FlatList
-          style={styles.flatListStyle}
+          style={styles.flatList}
           data={data}
           renderItem={renderItem}
           keyExtractor={(_, index) => index.toString()}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.flatListContentContainerStyle}
+          contentContainerStyle={styles.listContainer}
           scrollEnabled={false}
-          initialNumToRender={1}
-          maxToRenderPerBatch={1}
-          windowSize={2}
         />
-      </PanGestureHandler>
+      </GestureDetector>
     </SafeAreaView>
   );
 };
 
-// Define styles
 const styles = StyleSheet.create({
-  deckContainer: {
+  container: {
     flex: 1,
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  flatListContentContainerStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexGrow: 1,
-  },
-  flatListStyle: {
+  flatList: {
     width: '100%',
     height: '100%',
     flexGrow: 0,
   },
-  cardStyle: {
-    width: 'auto',
-    height: 'auto',
+  listContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  card: {
     justifyContent: 'center',
     alignItems: 'center',
-    userSelect: 'none',
   },
 });
 
