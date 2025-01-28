@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: 20,
+    marginBottom: 20,
   },
   button: {
     marginHorizontal: 10,
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     textAlign: 'center',
+    userSelect: 'none',
   },
 });
 
