@@ -52,6 +52,7 @@ const App = () => {
             <Text>{item}</Text>
           </View>
         )}
+        cardMarginHorizontalPercentage={5}
         swipeLeftDisabled={false}
         swipeRightDisabled={false}
         backwardMoveDisabled={false}
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    width: 300,
+    width: '100%',
     height: 200,
     backgroundColor: 'lightgray',
     justifyContent: 'center',

@@ -66,6 +66,7 @@ const App = () => {
       setCurrentIndex={setCurrentIndex}
       data={data}
       renderCard={renderCard}
+      cardMarginHorizontalPercentage={5}
     />
   );
 };
@@ -81,6 +82,7 @@ export default App;
 | `setCurrentIndex`      | `(index: number) => void`      | Callback to update the current card index.                      |         |
 | `data`                 | `T[]`                          | Array of data items for the deck.                               | `[]`    |
 | `renderCard`           | `(item: T) => React.ReactNode` | Function to render each card.                                   |         |
+| `cardMarginHorizontalPercentage` | `number` | Sets the horizontal margin percentage for the cards. | `0` |
 | `swipeLeftDisabled`    | `boolean`                      | Disables left swipe when set to true.                           | `false` |
 | `swipeRightDisabled`   | `boolean`                      | Disables right swipe when set to true.                          | `false` |
 | `backwardMoveDisabled` | `boolean`                      | Disables backward movement (going to the previous card).        | `false` |
@@ -94,6 +96,7 @@ export default App;
   setCurrentIndex={setCurrentIndex}
   data={data}
   renderCard={renderCard}
+  cardMarginHorizontalPercentage={5} 
   swipeLeftDisabled={true} // Disable left swipe
   swipeRightDisabled={false} // Allow right swipe
 />

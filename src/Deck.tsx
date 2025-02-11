@@ -19,6 +19,7 @@ interface SwipeableDeckProps<T> {
   swipeRightDisabled?: boolean;
   backwardMoveDisabled?: boolean;
   actionsReversed?: boolean;
+  cardMarginHorizontalPercentage?: number;
 }
 
 const SwipeableDeck = <T,>({
@@ -30,6 +31,7 @@ const SwipeableDeck = <T,>({
   swipeRightDisabled = false,
   backwardMoveDisabled = false,
   actionsReversed = false,
+  cardMarginHorizontalPercentage = 0,
 }: SwipeableDeckProps<T>) => {
   const position = useRef(new Animated.ValueXY()).current;
   const scaleValue = useRef(new Animated.Value(0)).current;
@@ -139,7 +141,12 @@ const SwipeableDeck = <T,>({
       return (
         <Animated.View
           key={index}
-          style={[styles.card, getCardStyle(), position.getLayout()]}
+          style={[
+            styles.card,
+            getCardStyle(),
+            position.getLayout(),
+            { marginHorizontal: `${cardMarginHorizontalPercentage}%` },
+          ]}
         >
           {renderCard(item)}
         </Animated.View>
