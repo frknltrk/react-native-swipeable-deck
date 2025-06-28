@@ -9,6 +9,7 @@ import {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const SWIPE_OUT_DURATION = 250;
+const SWIPE_THRESHOLD = 0.25;
 
 interface SwipeableDeckProps<T> {
   currentIndex: number;
@@ -33,6 +34,7 @@ const SwipeableDeck = <T,>({
   const scaleValue = useRef(new Animated.Value(0)).current;
   const [containerWidth, setContainerWidth] = useState(0);
 
+  // Reset animation when current index changes
   useEffect(() => {
     position.setValue({ x: 0, y: 0 });
     scaleValue.setValue(0);
@@ -54,46 +56,49 @@ const SwipeableDeck = <T,>({
     }).start();
   };
 
-  const forceSwipe = (direction: 'left' | 'right', onComplete: () => void) => {
-    const x = direction === 'right' ? containerWidth : -containerWidth;
-    Animated.timing(position, {
-      toValue: { x, y: 0 },
-      duration: SWIPE_OUT_DURATION,
-      useNativeDriver: true,
-    }).start(onComplete);
+  const getSwipeAction = (direction: 'left' | 'right') => {
+    return direction === 'left' ? onSwipeLeftGo : onSwipeRightGo;
   };
 
-  const updateIndex = (newIndex: number) => {
-    const clampedIndex = Math.max(0, Math.min(newIndex, data.length - 1));
-    setCurrentIndex(clampedIndex);
+  const getTargetIndex = (action: 'PREV' | 'NEXT') => {
+    return action === 'NEXT' ? currentIndex + 1 : currentIndex - 1;
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
-    const action = direction === 'left' ? onSwipeLeftGo : onSwipeRightGo;
+    const action = getSwipeAction(direction);
 
-    if (action === null) {
+    if (!action) {
       resetPosition();
       return;
     }
 
-    const targetIndex = action === 'NEXT' ? currentIndex + 1 : currentIndex - 1;
+    const targetIndex = getTargetIndex(action);
 
     if (targetIndex < 0 || targetIndex >= data.length) {
       resetPosition();
       return;
     }
 
-    forceSwipe(direction, () => updateIndex(targetIndex));
+    // Animate card in swipe direction
+    const swipeDistance =
+      direction === 'right' ? containerWidth : -containerWidth;
+    Animated.timing(position, {
+      toValue: { x: swipeDistance, y: 0 },
+      duration: SWIPE_OUT_DURATION,
+      useNativeDriver: true,
+    }).start(() => {
+      setCurrentIndex(Math.max(0, Math.min(targetIndex, data.length - 1)));
+    });
   };
 
   const gesture = Gesture.Pan()
-    .onUpdate(({ translationX, translationY }) => {
-      position.setValue({ x: translationX, y: translationY });
+    .onUpdate(({ translationX }) => {
+      position.setValue({ x: translationX, y: 0 });
     })
     .onEnd(({ translationX }) => {
-      if (translationX > containerWidth * 0.25) {
+      if (translationX > containerWidth * SWIPE_THRESHOLD) {
         handleSwipe('right');
-      } else if (translationX < -containerWidth * 0.25) {
+      } else if (translationX < -containerWidth * SWIPE_THRESHOLD) {
         handleSwipe('left');
       } else {
         resetPosition();
@@ -149,6 +154,7 @@ const SwipeableDeck = <T,>({
   );
 };
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
