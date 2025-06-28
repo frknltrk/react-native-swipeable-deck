@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -15,10 +15,8 @@ interface SwipeableDeckProps<T> {
   setCurrentIndex: (index: number) => void;
   data: T[];
   renderCard: (item: T) => React.ReactNode;
-  swipeLeftDisabled?: boolean;
-  swipeRightDisabled?: boolean;
-  backwardMoveDisabled?: boolean;
-  actionsReversed?: boolean;
+  onSwipeLeftGo?: 'PREV' | 'NEXT' | null;
+  onSwipeRightGo?: 'PREV' | 'NEXT' | null;
   cardMarginHorizontalPercentage?: number;
 }
 
@@ -27,10 +25,8 @@ const SwipeableDeck = <T,>({
   setCurrentIndex,
   data,
   renderCard,
-  swipeLeftDisabled = false,
-  swipeRightDisabled = false,
-  backwardMoveDisabled = false,
-  actionsReversed = false,
+  onSwipeLeftGo = null,
+  onSwipeRightGo = null,
   cardMarginHorizontalPercentage = 0,
 }: SwipeableDeckProps<T>) => {
   const position = useRef(new Animated.ValueXY()).current;
@@ -51,62 +47,64 @@ const SwipeableDeck = <T,>({
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
-  const resetPosition = () => {
+  const resetPosition = useCallback(() => {
     Animated.spring(position, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: true,
     }).start();
-  };
+  }, [position]);
 
-  const forceSwipe = (direction: 'left' | 'right', onComplete: () => void) => {
-    const x = direction === 'right' ? containerWidth : -containerWidth;
-    Animated.timing(position, {
-      toValue: { x, y: 0 },
-      duration: SWIPE_OUT_DURATION,
-      useNativeDriver: true,
-    }).start(onComplete);
-  };
-
-  const updateIndex = (newIndex: number) => {
-    const clampedIndex = Math.max(0, Math.min(newIndex, data.length - 1));
-    setCurrentIndex(clampedIndex);
-  };
-
-  const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'left') {
-      if (!swipeLeftDisabled) {
-        actionsReversed ? moveBackward() : moveForward();
-      } else {
-        resetPosition();
-      }
-    } else if (direction === 'right') {
-      if (!swipeRightDisabled) {
-        actionsReversed ? moveForward() : moveBackward();
-      } else {
-        resetPosition();
-      }
-    }
-  };
-
-  const moveForward = () => {
+  const moveToNextCard = useCallback(() => {
     if (currentIndex < data.length - 1) {
-      forceSwipe(actionsReversed ? 'right' : 'left', () =>
-        updateIndex(currentIndex + 1)
-      );
-    } else {
-      resetPosition();
+      setCurrentIndex(currentIndex + 1);
+      return true;
     }
-  };
+    return false;
+  }, [currentIndex, data.length, setCurrentIndex]);
 
-  const moveBackward = () => {
-    if (!backwardMoveDisabled && currentIndex > 0) {
-      forceSwipe(actionsReversed ? 'left' : 'right', () =>
-        updateIndex(currentIndex - 1)
-      );
-    } else {
-      resetPosition();
+  const moveToPreviousCard = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      return true;
     }
-  };
+    return false;
+  }, [currentIndex, setCurrentIndex]);
+
+  const forceSwipe = useCallback(
+    (direction: 'right' | 'left') => {
+      let action = direction === 'right' ? onSwipeRightGo : onSwipeLeftGo;
+      let isSwipeCompleted;
+      if (action === 'NEXT') {
+        isSwipeCompleted = moveToNextCard();
+      } else if (action === 'PREV') {
+        isSwipeCompleted = moveToPreviousCard();
+      } else {
+        isSwipeCompleted = false;
+      }
+
+      if (isSwipeCompleted) {
+        const x = direction === 'right' ? containerWidth : -containerWidth;
+        Animated.timing(position, {
+          toValue: { x, y: 0 },
+          duration: SWIPE_OUT_DURATION,
+          useNativeDriver: true,
+        }).start(() => {
+          position.setValue({ x: 0, y: 0 });
+        });
+      } else {
+        resetPosition();
+      }
+    },
+    [
+      onSwipeRightGo,
+      onSwipeLeftGo,
+      moveToNextCard,
+      moveToPreviousCard,
+      containerWidth,
+      position,
+      resetPosition,
+    ]
+  );
 
   const gesture = Gesture.Pan()
     .onUpdate(({ translationX, translationY }) => {
@@ -114,9 +112,9 @@ const SwipeableDeck = <T,>({
     })
     .onEnd(({ translationX }) => {
       if (translationX > containerWidth * 0.25) {
-        handleSwipe('right');
+        forceSwipe('right');
       } else if (translationX < -containerWidth * 0.25) {
-        handleSwipe('left');
+        forceSwipe('left');
       } else {
         resetPosition();
       }

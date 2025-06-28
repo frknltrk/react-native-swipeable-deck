@@ -53,10 +53,8 @@ const App = () => {
           </View>
         )}
         cardMarginHorizontalPercentage={5}
-        swipeLeftDisabled={false}
-        swipeRightDisabled={false}
-        backwardMoveDisabled={false}
-        actionsReversed={false}
+        onSwipeLeftGo={'NEXT'}
+        onSwipeRightGo={'PREV'}
       />
       <View style={styles.buttonContainer}>
         <CustomButton
