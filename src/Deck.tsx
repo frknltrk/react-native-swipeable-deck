@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -47,64 +47,44 @@ const SwipeableDeck = <T,>({
     setContainerWidth(event.nativeEvent.layout.width);
   };
 
-  const resetPosition = useCallback(() => {
+  const resetPosition = () => {
     Animated.spring(position, {
       toValue: { x: 0, y: 0 },
       useNativeDriver: true,
     }).start();
-  }, [position]);
+  };
 
-  const moveToNextCard = useCallback(() => {
-    if (currentIndex < data.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      return true;
+  const forceSwipe = (direction: 'left' | 'right', onComplete: () => void) => {
+    const x = direction === 'right' ? containerWidth : -containerWidth;
+    Animated.timing(position, {
+      toValue: { x, y: 0 },
+      duration: SWIPE_OUT_DURATION,
+      useNativeDriver: true,
+    }).start(onComplete);
+  };
+
+  const updateIndex = (newIndex: number) => {
+    const clampedIndex = Math.max(0, Math.min(newIndex, data.length - 1));
+    setCurrentIndex(clampedIndex);
+  };
+
+  const handleSwipe = (direction: 'left' | 'right') => {
+    const action = direction === 'left' ? onSwipeLeftGo : onSwipeRightGo;
+
+    if (action === null) {
+      resetPosition();
+      return;
     }
-    return false;
-  }, [currentIndex, data.length, setCurrentIndex]);
 
-  const moveToPreviousCard = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      return true;
+    const targetIndex = action === 'NEXT' ? currentIndex + 1 : currentIndex - 1;
+
+    if (targetIndex < 0 || targetIndex >= data.length) {
+      resetPosition();
+      return;
     }
-    return false;
-  }, [currentIndex, setCurrentIndex]);
 
-  const forceSwipe = useCallback(
-    (direction: 'right' | 'left') => {
-      let action = direction === 'right' ? onSwipeRightGo : onSwipeLeftGo;
-      let isSwipeCompleted;
-      if (action === 'NEXT') {
-        isSwipeCompleted = moveToNextCard();
-      } else if (action === 'PREV') {
-        isSwipeCompleted = moveToPreviousCard();
-      } else {
-        isSwipeCompleted = false;
-      }
-
-      if (isSwipeCompleted) {
-        const x = direction === 'right' ? containerWidth : -containerWidth;
-        Animated.timing(position, {
-          toValue: { x, y: 0 },
-          duration: SWIPE_OUT_DURATION,
-          useNativeDriver: true,
-        }).start(() => {
-          position.setValue({ x: 0, y: 0 });
-        });
-      } else {
-        resetPosition();
-      }
-    },
-    [
-      onSwipeRightGo,
-      onSwipeLeftGo,
-      moveToNextCard,
-      moveToPreviousCard,
-      containerWidth,
-      position,
-      resetPosition,
-    ]
-  );
+    forceSwipe(direction, () => updateIndex(targetIndex));
+  };
 
   const gesture = Gesture.Pan()
     .onUpdate(({ translationX, translationY }) => {
@@ -112,9 +92,9 @@ const SwipeableDeck = <T,>({
     })
     .onEnd(({ translationX }) => {
       if (translationX > containerWidth * 0.25) {
-        forceSwipe('right');
+        handleSwipe('right');
       } else if (translationX < -containerWidth * 0.25) {
-        forceSwipe('left');
+        handleSwipe('left');
       } else {
         resetPosition();
       }
