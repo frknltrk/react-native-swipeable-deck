@@ -26,8 +26,8 @@ const SwipeableDeck = <T,>({
   setCurrentIndex,
   data,
   renderCard,
-  onSwipeLeftGo = null,
-  onSwipeRightGo = null,
+  onSwipeLeftGo = 'NEXT',
+  onSwipeRightGo = 'PREV',
   cardMarginHorizontalPercentage = 0,
 }: SwipeableDeckProps<T>) => {
   const position = useRef(new Animated.ValueXY()).current;
