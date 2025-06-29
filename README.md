@@ -82,11 +82,9 @@ export default App;
 | `setCurrentIndex`      | `(index: number) => void`      | Callback to update the current card index.                      |         |
 | `data`                 | `T[]`                          | Array of data items for the deck.                               | `[]`    |
 | `renderCard`           | `(item: T) => React.ReactNode` | Function to render each card.                                   |         |
-| `cardMarginHorizontalPercentage` | `number` | Sets the horizontal margin percentage for the cards. | `0` |
-| `swipeLeftDisabled`    | `boolean`                      | Disables left swipe when set to true.                           | `false` |
-| `swipeRightDisabled`   | `boolean`                      | Disables right swipe when set to true.                          | `false` |
-| `backwardMoveDisabled` | `boolean`                      | Disables backward movement (going to the previous card).        | `false` |
-| `actionsReversed`      | `boolean`                      | Reverses the swipe actions (left for next, right for previous). | `false` |
+| `cardMarginHorizontalPercentage` | `number`             | Sets the horizontal margin percentage for the cards. | `0` |
+| `onSwipeLeftGo`    | `'PREV' \| 'NEXT' \| null`         | Action for left swipe: move to previous, next, or disable true. | `'NEXT'` |
+| `onSwipeRightGo`    | `'PREV' \| 'NEXT' \| null`        | Action for right swipe: move to previous, next, or disable | `'PREV'` |
 
 ### Example with Swipe Restrictions
 
@@ -97,8 +95,8 @@ export default App;
   data={data}
   renderCard={renderCard}
   cardMarginHorizontalPercentage={5} 
-  swipeLeftDisabled={true} // Disable left swipe
-  swipeRightDisabled={false} // Allow right swipe
+  onSwipeLeftGo="NEXT" // Allow left swipe to go to the next card
+  onSwipeRightGo={null} // Disable right swipe
 />
 ```
 
